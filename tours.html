@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tours - Edinburgh Walking Tours</title>
+    <link rel="stylesheet" href="styles/main.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+</head>
+<body>
+    <header>
+        <h1>Edinburgh Walking Tours</h1>
+    </header>
+	<div class="container">
+		<section class="fullWidth">
+			<nav>
+				<ul>
+					<div class="fourthWidth">
+						<li><a href="index.html">Home</a></li>
+					</div>
+					<div class="fourthWidth">
+						<li><a href="tours.html">Tours</a></li>
+					</div>
+					<div class="fourthWidth">
+						<li><a href="reviews.html">Reviews</a></li>
+					</div>
+					<div class="fourthWidth">
+						<li><a href="settings.html">Settings</a></li>
+					</div>
+				</ul>
+			</nav>
+		</section>
+    </div>
+    <main>
+        <h2 class="page-title">Tours</h2>
+
+        <!-- Map container -->
+        <div id="map"></div>
+    </main>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+    <!-- Custom map script -->
+    <script src="scripts/map.js"></script>
+	</div>
+</body>
+</html>
