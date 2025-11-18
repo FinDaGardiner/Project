@@ -1,46 +1,36 @@
-// scripts/map.js – Old Town Walking Tour (Full Version with Next Info)
 
 var tourWaypoints = [
-    // Optional starting point – you can remove if you want
     { name: "Start – Tesco (Morrison St)", coords: [55.9445, -3.2089] },
-
     { name: "Edinburgh Castle",           coords: [55.9486, -3.1999] },
     { name: "Grassmarket",                coords: [55.9468, -3.1956] },
-    { name: "St Giles' Cathedral",        coords: [55.9496, -3.1908] },  // Royal Mile
+    { name: "St Giles' Cathedral",        coords: [55.9496, -3.1908] }, 
     { name: "Greyfriars Kirkyard",        coords: [55.9467, -3.1922] },
     { name: "Holyrood Palace",            coords: [55.9526, -3.1722] }
 ];
 
 var currentWaypointIndex = 0;
-var proximityThreshold = 0.0005; // ~50 meters
+var proximityThreshold = 0.0005; 
 var map, userMarker, routeControl;
 
-// -------------------------------------------------
-// Initialise map
-// -------------------------------------------------
+
 var map = L.map('map').setView([55.9533, -3.1883], 14);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Add numbered markers for each location
 tourWaypoints.forEach(function(point, i) {
     L.marker(point.coords)
         .addTo(map)
         .bindPopup(`<b>${i + 1}. ${point.name}</b>`);
 });
 
-// -------------------------------------------------
-// Distance helper
-// -------------------------------------------------
+
 function distance(lat1, lng1, lat2, lng2) {
     return Math.sqrt(Math.pow(lat1 - lat2, 2) + Math.pow(lng1 - lng2, 2));
 }
 
-// -------------------------------------------------
-// Draw route from user to current target
-// -------------------------------------------------
+
 function drawRoute(userLat, userLng) {
     if (currentWaypointIndex >= tourWaypoints.length) return;
 
@@ -63,14 +53,12 @@ function drawRoute(userLat, userLng) {
     map.fitBounds(routeControl.getBounds().pad(0.1));
 }
 
-// -------------------------------------------------
-// Update the "Next:" text and button
-// -------------------------------------------------
+-
 function updateNextInfo() {
     const nameEl = document.getElementById('next-location-name');
     const btn    = document.getElementById('next-btn');
 
-    if (!nameEl || !btn) return; // Safety check
+    if (!nameEl || !btn) return; 
 
     if (currentWaypointIndex >= tourWaypoints.length) {
         nameEl.textContent = "Tour Complete!";
@@ -84,9 +72,7 @@ function updateNextInfo() {
     }
 }
 
-// -------------------------------------------------
-// Manual "Next" button (works without GPS)
-// -------------------------------------------------
+
 document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.getElementById('next-btn');
     if (nextBtn) {
@@ -107,20 +93,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Initial update
+
     updateNextInfo();
 });
 
-// -------------------------------------------------
-// Live GPS tracking
-// -------------------------------------------------
+
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition(
         function(position) {
             const userLat = position.coords.latitude;
             const userLng = position.coords.longitude;
 
-            // User marker
             if (!userMarker) {
                 userMarker = L.marker([userLat, userLng], {
                     icon: L.icon({
@@ -160,7 +143,6 @@ if (navigator.geolocation) {
         },
         function(err) {
             console.error("Geolocation error:", err);
-            // Still allow manual use via button
         },
         { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
     );

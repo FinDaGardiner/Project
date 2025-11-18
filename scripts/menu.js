@@ -1,4 +1,3 @@
-// Mobile hamburger menu – opens/closes overlay
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.querySelector('.hamburger');
     const menu = document.getElementById('overlayMenu');
@@ -9,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
         menu.classList.toggle('open');
     });
 
-    // Close menu when a link is clicked
     menu.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
             btn.setAttribute('aria-expanded', 'false');
