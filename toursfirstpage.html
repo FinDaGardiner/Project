@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edinburgh Walking Tours - Tours</title>
+    <title>Tours - Edinburgh Walking Tours</title>
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
 
-    <!-- HAMBURGER HEADER -->
+    <!-- Same header & menus on every page – copy-paste this block -->
     <header class="site-header">
         <button class="hamburger" aria-label="Open menu" aria-expanded="false">
             <span></span><span></span><span></span>
@@ -16,7 +16,6 @@
         <h1 class="header-title">Edinburgh Walking Tours</h1>
     </header>
 
-    <!-- MOBILE OVERLAY MENU -->
     <nav class="overlay-menu" id="overlayMenu">
         <ul>
             <li><a href="index.html">Home</a></li>
@@ -26,55 +25,44 @@
         </ul>
     </nav>
 
-    <!-- DESKTOP NAV -->
     <div class="desktop-nav">
         <nav>
             <ul>
-                <div class="fourthWidth"><li><a href="index.html">Home</a></li></div>
-                <div class="fourthWidth"><li><a href="toursfirstpage.html">Tours</a></li></div>
-                <div class="fourthWidth"><li><a href="reviews.html">Reviews</a></li></div>
-                <div class="fourthWidth"><li><a href="settings.html">Settings</a></li></div>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="toursfirstpage.html">Tours</a></li>
+                <li><a href="reviews.html">Reviews</a></li>
+                <li><a href="settings.html">Settings</a></li>
             </ul>
         </nav>
     </div>
 
-		<!-- MAIN CONTENT WRAPPER -->
-	<div class="container">
-		<main>
-			<!-- TOUR LIST -->
-			<section>
-				<h2 class="page-title">Tours</h2>
-				<p>There are a list of different tours available on this site which you will have the option to choose from.</p>
-			</section>
+    <div class="container">
+        <main>
+            <section>
+                <h2 class="page-title">Tours</h2>
+                <p>Choose one of our self-guided walking tours below via the header:</p>
+            </section>
 
-			<section>
-				<h2><a href="tours.html">Old Town</a></h2>
-				<p>Explore the historic side of Edinburgh through its Old Town</p>
-				<p>Locations: Edinburgh Castle, Grassmarket, Royal Mile, Greyfriars Kirkyard, St Giles' Cathedral, Holyrood Palace</p>
+            <section>
+                <h2><a href="tours.html">Old Town Tour</a></h2>
+                <p>Explore Edinburgh's historic Old Town: Edinburgh Castle, Royal Mile, St Giles Cathedral, Greyfriars Kirkyard, Holyrood.</p>
+                <div class="full-width-image">
+                    <img src="images/edinburgh-castle.jpg" alt="Edinburgh Castle">
+                    <p class="img-caption">Edinburgh Castle</p>
+                </div>
+            </section>
 
-				<!-- FULL-WIDTH IMAGE WITH CAPTION -->
-				<div class="full-width-image">
-					<img src="images/edinburgh-castle.jpg" alt="Edinburgh Castle from Princes Street Gardens">
-					<p class="img-caption">Edinburgh Castle</p>
-				</div>
-			</section>
+            <section>
+                <h2><a href="hills-tour.html">7 Hills of Edinburgh</a></h2>
+                <p>A challenging walk to all seven historic hills with stunning views.</p>
+                <div class="full-width-image">
+                    <img src="images/arthurs-seat.jpg" alt="Arthur's Seat">
+                    <p class="img-caption">Arthur's Seat</p>
+                </div>
+            </section>
+        </main>
+    </div>
 
-			<section>
-				<h2><a href="hills-tour.html">7 Hills of Edinburgh</a></h2>
-				<p>The 7 hills walk/run is a long distance outdoor challenge to walk up the main hills in and around Edinburgh.</p>
-				<p>Locations: Calton Hill, Arthur's Seat, Blackford Hill, Braid Hill, Craiglockhart Hill, Corstorphine Hill, Castle Rock</p>
-
-				<!-- FULL-WIDTH IMAGE WITH CAPTION -->
-				<div class="full-width-image">
-					<img src="images/arthurs-seat.jpg" alt="Arthur's Seat from the bottom ">
-					<p class="img-caption">Arthur's Seat</p>
-				</div>
-			</section>
-		</main>
-	</div>
-
-    <!-- SCRIPTS (at end of body) -->
     <script src="scripts/menu.js"></script>
-    <!-- dropdown.js not needed on this page (no dropdown) -->
 </body>
 </html>
