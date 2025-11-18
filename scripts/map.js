@@ -1,46 +1,54 @@
-// Define tour waypoints in order
-var tourWaypoints = [
-	{ name: "Tesco", coords: [55.934083, -3.210556] }, 
-    { name: "Edinburgh Castle", coords: [55.9486, -3.1999] },
-    { name: "Grassmarket", coords: [55.9468, -3.1956] },
-    { name: "Holyrood Palace", coords: [55.9524, -3.1720] },
+// scripts/map.js – Old Town Walking Tour (Full Version with Next Info)
 
+var tourWaypoints = [
+    // Optional starting point – you can remove if you want
+    { name: "Start – Tesco (Morrison St)", coords: [55.9445, -3.2089] },
+
+    { name: "Edinburgh Castle",           coords: [55.9486, -3.1999] },
+    { name: "Grassmarket",                coords: [55.9468, -3.1956] },
+    { name: "St Giles' Cathedral",        coords: [55.9496, -3.1908] },  // Royal Mile
+    { name: "Greyfriars Kirkyard",        coords: [55.9467, -3.1922] },
+    { name: "Holyrood Palace",            coords: [55.9526, -3.1722] }
 ];
 
-var currentWaypointIndex = 0; // Track which waypoint user is heading to
-var proximityThreshold = 0.0005; // ~50 meters (approx, in lat/lng units)
+var currentWaypointIndex = 0;
+var proximityThreshold = 0.0005; // ~50 meters
+var map, userMarker, routeControl;
 
-// Initialize map
-var map = L.map('map').setView([55.9533, -3.1883], 13);
+// -------------------------------------------------
+// Initialise map
+// -------------------------------------------------
+var map = L.map('map').setView([55.9533, -3.1883], 14);
 
-// Add OSM tiles
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
+    attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Add markers for all waypoints
-tourWaypoints.forEach(function(point) {
-    L.marker(point.coords).addTo(map).bindPopup(point.name);
+// Add numbered markers for each location
+tourWaypoints.forEach(function(point, i) {
+    L.marker(point.coords)
+        .addTo(map)
+        .bindPopup(`<b>${i + 1}. ${point.name}</b>`);
 });
 
-// Function to calculate distance between two coordinates (lat/lng)
+// -------------------------------------------------
+// Distance helper
+// -------------------------------------------------
 function distance(lat1, lng1, lat2, lng2) {
     return Math.sqrt(Math.pow(lat1 - lat2, 2) + Math.pow(lng1 - lng2, 2));
 }
 
-// Draw route to current waypoint
+// -------------------------------------------------
+// Draw route from user to current target
+// -------------------------------------------------
 function drawRoute(userLat, userLng) {
     if (currentWaypointIndex >= tourWaypoints.length) return;
 
-    // Remove old route
-    if (window.routeControl) {
-        map.removeControl(window.routeControl);
-    }
+    if (routeControl) map.removeControl(routeControl);
 
     const target = tourWaypoints[currentWaypointIndex];
 
-    // Draw new route
-    window.routeControl = L.Routing.control({
+    routeControl = L.Routing.control({
         waypoints: [
             L.latLng(userLat, userLng),
             L.latLng(target.coords[0], target.coords[1])
@@ -49,58 +57,113 @@ function drawRoute(userLat, userLng) {
         show: false,
         addWaypoints: false,
         draggableWaypoints: false,
-        lineOptions: {
-            styles: [{ color: '#1E90FF', weight: 5, opacity: 0.8 }]
-        }
+        lineOptions: { styles: [{ color: '#1E90FF', weight: 6, opacity: 0.9 }] }
     }).addTo(map);
+
+    map.fitBounds(routeControl.getBounds().pad(0.1));
 }
 
-// Track user location
+// -------------------------------------------------
+// Update the "Next:" text and button
+// -------------------------------------------------
+function updateNextInfo() {
+    const nameEl = document.getElementById('next-location-name');
+    const btn    = document.getElementById('next-btn');
+
+    if (!nameEl || !btn) return; // Safety check
+
+    if (currentWaypointIndex >= tourWaypoints.length) {
+        nameEl.textContent = "Tour Complete!";
+        btn.textContent = "Finished";
+        btn.disabled = true;
+    } else {
+        const next = tourWaypoints[currentWaypointIndex];
+        nameEl.textContent = next.name;
+        btn.textContent = `Go to ${next.name}`;
+        btn.disabled = false;
+    }
+}
+
+// -------------------------------------------------
+// Manual "Next" button (works without GPS)
+// -------------------------------------------------
+document.addEventListener('DOMContentLoaded', function() {
+    const nextBtn = document.getElementById('next-btn');
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+            if (currentWaypointIndex >= tourWaypoints.length) return;
+
+            alert(`You've reached ${tourWaypoints[currentWaypointIndex].name}!`);
+            currentWaypointIndex++;
+            updateNextInfo();
+
+            if (currentWaypointIndex >= tourWaypoints.length) {
+                alert("Tour Complete! You've explored the Old Town!");
+                if (routeControl) map.removeControl(routeControl);
+            } else if (userMarker) {
+                const pos = userMarker.getLatLng();
+                drawRoute(pos.lat, pos.lng);
+            }
+        });
+    }
+
+    // Initial update
+    updateNextInfo();
+});
+
+// -------------------------------------------------
+// Live GPS tracking
+// -------------------------------------------------
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition(
         function(position) {
             const userLat = position.coords.latitude;
             const userLng = position.coords.longitude;
 
-            // Add or update user marker
-            if (!window.userMarker) {
-                window.userMarker = L.marker([userLat, userLng], {icon: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png', iconSize: [32,32]})})
-                    .addTo(map)
-                    .bindPopup("You are here")
-                    .openPopup();
+            // User marker
+            if (!userMarker) {
+                userMarker = L.marker([userLat, userLng], {
+                    icon: L.icon({
+                        iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png',
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40]
+                    })
+                })
+                .addTo(map)
+                .bindPopup("You are here")
+                .openPopup();
             } else {
-                window.userMarker.setLatLng([userLat, userLng]);
+                userMarker.setLatLng([userLat, userLng]);
             }
 
-            // Center map
-            map.setView([userLat, userLng], 15);
+            map.setView([userLat, userLng], 16);
 
-            // Draw route to current waypoint
             if (currentWaypointIndex < tourWaypoints.length) {
                 drawRoute(userLat, userLng);
 
-                // Check if user is near the current waypoint
                 const target = tourWaypoints[currentWaypointIndex];
                 const dist = distance(userLat, userLng, target.coords[0], target.coords[1]);
 
                 if (dist < proximityThreshold) {
-                    alert(`You have reached ${target.name}!`);
-                    currentWaypointIndex++; // Move to next waypoint
+                    alert(`You've arrived at ${target.name}!`);
+                    currentWaypointIndex++;
+                    updateNextInfo();
+
                     if (currentWaypointIndex >= tourWaypoints.length) {
-                        alert("Tour completed! 🎉");
-                        if (window.routeControl) {
-                            map.removeControl(window.routeControl); // Remove final route
-                        }
+                        alert("Tour Complete! You've explored the Old Town! Well done!");
+                        if (routeControl) map.removeControl(routeControl);
+                    } else {
+                        setTimeout(() => drawRoute(userLat, userLng), 1000);
                     }
                 }
             }
         },
-        function(error) {
-            console.error("Error getting location:", error);
-            alert("Unable to access your location. Please enable GPS.");
+        function(err) {
+            console.error("Geolocation error:", err);
+            // Still allow manual use via button
         },
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
     );
 } else {
-    alert("Geolocation is not supported by your browser.");
+    console.warn("Geolocation not supported – using manual mode");
 }

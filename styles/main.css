@@ -1,24 +1,133 @@
-/* General styling */
+/* ============================================= */
+/*  1. RESET & BASE                              */
+/* ============================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 100%;
+}
+
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
     background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
 }
 
-header {
-    background-color: #333;
-    color: white;
+/* ============================================= */
+/*  2. HAMBURGER HEADER (MOBILE)                 */
+/* ============================================= */
+.site-header {
+    display: flex;
+    align-items: center;
+    background: #333;
+    color: #fff;
+    padding: 0.8rem 1rem;
+    position: relative;
+    z-index: 1100;
+}
+
+.header-title {
+    flex: 1;
+    margin: 0;
+    font-size: 1.4rem;
     text-align: center;
-    padding: 1rem 0;
 }
 
-nav ul {
+/* Hamburger Button */
+.hamburger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 1200;
+}
+
+.hamburger span {
+    width: 24px;
+    height: 3px;
+    background: #fff;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger[aria-expanded="true"] span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger[aria-expanded="true"] span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* ============================================= */
+/*  3. OVERLAY MENU (MOBILE) – NO DROPDOWN       */
+/* ============================================= */
+.overlay-menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(51, 51, 51, 0.98);
+    transition: left 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    padding-top: 5rem;
+}
+
+.overlay-menu.open {
+    left: 0;
+}
+
+.overlay-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.overlay-menu li {
+    margin: 0;
+}
+
+.overlay-menu a {
+    display: block;
+    padding: 1.2rem 2rem;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.overlay-menu a:hover {
+    background: #555;
+}
+
+/* ============================================= */
+/*  4. DESKTOP NAVIGATION (HIDDEN ON MOBILE)     */
+/* ============================================= */
+.desktop-nav {
+    background: #444;
+}
+
+.desktop-nav nav ul {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: space-around;
-    background-color: #444;
 }
 
 .fourthWidth {
@@ -26,46 +135,229 @@ nav ul {
     text-align: center;
 }
 
-nav li {
+.desktop-nav nav li {
     display: inline-block;
 }
 
-nav a {
+.desktop-nav nav a {
     display: block;
     padding: 1rem;
-    color: white;
+    color: #fff;
     text-decoration: none;
     font-weight: bold;
     transition: background-color 0.3s ease;
 }
 
-nav a:hover {
+.desktop-nav nav a:hover {
     background-color: #666;
 }
 
-/* Page title styling */
+/* ============================================= */
+/*  5. RESPONSIVE SWITCH                         */
+/* ============================================= */
+/* Mobile: hide desktop nav, show hamburger */
+@media (max-width: 768px) {
+    .desktop-nav {
+        display: none;
+    }
+}
+
+/* Desktop: hide hamburger & overlay */
+@media (min-width: 769px) {
+    .hamburger,
+    .overlay-menu {
+        display: none;
+    }
+}
+
+/* ============================================= */
+/*  6. MAIN CONTENT & PAGE TITLE                 */
+/* ============================================= */
+.container {
+    width: 100%;
+}
+
+main {
+    padding: 2rem 1.5rem;
+}
+
 .page-title {
     text-align: center;
-    margin-top: 2rem;
+    margin: 2rem 0 1.5rem;
     font-size: 2rem;
     color: #333;
 }
 
-/* Map container styling */
-#map {
-    height: 500px;
-    width: 90%;
-    margin: 20px auto;
-    border: 2px solid #333;
-    border-radius: 10px;
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    main {
+        padding: 1.5rem 1rem;
+    }
+    .page-title {
+        font-size: 1.6rem;
+    }
 }
 
-/* Responsive nav for smaller screens */
+/* ============================================= */
+/*  7. MAP STYLING                               */
+/* ============================================= */
+#map {
+    height: 70vh;
+    width: 100%;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-top: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 @media (max-width: 768px) {
-    nav ul {
+    #map {
+        height: 60vh;
+    }
+}
+
+/* ============================================= */
+/*  8. DROPDOWN (DESKTOP ONLY – MOBILE USES LINK) */
+/* ============================================= */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    display: block;
+    padding: 1rem;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    min-width: 180px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 0.8rem 1rem;
+    text-decoration: none;
+    display: block;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.dropdown-content a:hover {
+    background: #f0f0f0;
+}
+
+/* Desktop: hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Mobile: JS toggle (kept for desktop dropdown if used elsewhere) */
+.dropdown.open .dropdown-content {
+    display: block;
+}
+
+/* ============================================= */
+/*  9. HALF-LAYOUT (TEXT + IMAGE)                */
+/* ============================================= */
+.half-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: flex-start;
+    margin: 2rem 0;
+}
+
+.half-left,
+.half-right {
+    flex: 1 1 300px;
+}
+
+.half-right img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .half-layout {
         flex-direction: column;
     }
-    .fourthWidth {
-        width: 100%;
+}
+
+/* ----- NEXT HILL INFO (under map) ----- */
+#next-hill-info {
+    text-align: center;
+    margin: 1.5rem 0 1rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    background: #f0f7ff;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #d0e4ff;
+}
+#next-hill-info strong { color: #1E90FF; }
+
+/* ----- ACTION BUTTON (reuse existing .action-btn) ----- */
+.action-btn {
+    background: #1E90FF;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    margin-left: 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.action-btn:hover:not(:disabled) { background: #0D6EFD; }
+.action-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+/* ============================================= */
+/*  FULL-WIDTH IMAGES WITH CAPTION               */
+/* ============================================= */
+.full-width-image {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.full-width-image img {
+    width: 100%;
+    height: auto;
+    max-height: 70vh;           /* Prevents super-tall images */
+    object-fit: cover;          /* Crops nicely if needed */
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    display: block;
+}
+
+.img-caption {
+    margin-top: 0.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    font-style: italic;
+}
+
+/* Mobile fine-tuning */
+@media (max-width: 768px) {
+    .full-width-image {
+        margin: 1.5rem 0;
+    }
+    .full-width-image img {
+        border-radius: 10px;
     }
 }
