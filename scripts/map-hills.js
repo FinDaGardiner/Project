@@ -1,4 +1,6 @@
-const tourWaypoints = [
+// initialises locations
+
+const tourPoints = [
     { name: "Castle Rock",            coords: [55.9486, -3.1999] },
     { name: "Calton Hill",            coords: [55.9553, -3.1835] },
     { name: "Arthur's Seat",          coords: [55.9441, -3.1618] },
@@ -8,50 +10,62 @@ const tourWaypoints = [
     { name: "Corstorphine Hill",      coords: [55.9512, -3.2796] }
 ];
 
-let currentWaypointIndex = 0;
-const proximityThreshold = 0.0005; // -50m radius
+let currentPointIndex = 0;
+const proximityThreshold = 0.0005;
+
 let map, userMarker, routeControl;
 
 
+
+// initialise and start up the map
 function initMap() {
     map = L.map('map').setView([55.9533, -3.1883], 13);
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: "© OpenStreetMap contributors"
     }).addTo(map);
 
-
-    tourWaypoints.forEach((point, i) => {
+    tourPoints.forEach((point, i) => {
         L.marker(point.coords)
             .addTo(map)
             .bindPopup(`<b>${i + 1}. ${point.name}</b>`);
     });
 
-    updateNextInfo(); 
+    updateNextPointInfo();
 }
 
-function updateNextInfo() {
-    const nameEl = document.getElementById('next-hill-name');
-    const btn    = document.getElementById('next-btn');
 
-    if (currentWaypointIndex >= tourWaypoints.length) {
+
+// update location to next when button pressed
+
+function updateNextPointInfo() {
+    const nameEl = document.getElementById('next-point-name');
+    const btn = document.getElementById('next-point-btn');
+
+    if (!nameEl || !btn) return;
+
+    if (currentPointIndex >= tourPoints.length) {
         nameEl.textContent = "Tour Complete!";
-        btn.textContent    = "Finished";
-        btn.disabled       = true;
+        btn.textContent = "Finished";
+        btn.disabled = true;
     } else {
-        const next = tourWaypoints[currentWaypointIndex];
+        const next = tourPoints[currentPointIndex];
         nameEl.textContent = next.name;
-        btn.textContent    = `Go to ${next.name}`;
-        btn.disabled       = false;
+        btn.textContent = `Go to ${next.name}`;
+        btn.disabled = false;
     }
 }
 
 
+
+// draw route on map and overlay it
+
 function drawRoute(userLat, userLng) {
-    if (currentWaypointIndex >= tourWaypoints.length) return;
+    if (currentPointIndex >= tourPoints.length) return;
 
     if (routeControl) map.removeControl(routeControl);
 
-    const target = tourWaypoints[currentWaypointIndex];
+    const target = tourPoints[currentPointIndex];
 
     routeControl = L.Routing.control({
         waypoints: [
@@ -59,97 +73,97 @@ function drawRoute(userLat, userLng) {
             L.latLng(target.coords[0], target.coords[1])
         ],
         routeWhileDragging: false,
-        show: false,
         addWaypoints: false,
         draggableWaypoints: false,
-        lineOptions: { styles: [{ color: '#1E90FF', weight: 5, opacity: 0.8 }] }
+        show: false,
+        lineOptions: { styles: [{ color: '#1E90FF', weight: 5 }] }
     }).addTo(map);
 
     map.fitBounds(routeControl.getBounds().pad(0.1));
 }
 
 
-document.getElementById('next-btn').addEventListener('click', () => {
-    if (currentWaypointIndex >= tourWaypoints.length) return;
 
-    alert(`You have reached ${tourWaypoints[currentWaypointIndex].name}!`);
-    currentWaypointIndex++;
+// distance function for proximity check
 
-    updateNextInfo();
+function distance(lat1, lng1, lat2, lng2) {
+    return Math.sqrt(
+        Math.pow(lat1 - lat2, 2) +
+        Math.pow(lng1 - lng2, 2)
+    );
+}
 
-    if (currentWaypointIndex >= tourWaypoints.length) {
-        alert('The 7 Hills of Edinburgh tour is complete – congratulations!');
+
+
+// button code
+
+document.getElementById('next-point-btn').addEventListener('click', () => {
+    if (currentPointIndex >= tourPoints.length) return;
+
+    alert(`You have reached ${tourPoints[currentPointIndex].name}!`);
+
+    currentPointIndex++;
+    updateNextPointInfo();
+
+    if (currentPointIndex >= tourPoints.length) {
+        alert("Tour complete — well done!");
         if (routeControl) map.removeControl(routeControl);
         return;
     }
 
-    if (userMarker) {
-        const pos = userMarker.getLatLng();
-        drawRoute(pos.lat, pos.lng);
-    } else {
-        const center = map.getCenter();
-        drawRoute(center.lat, center.lng);
-    }
+    const pos = userMarker ? userMarker.getLatLng() : map.getCenter();
+    drawRoute(pos.lat, pos.lng);
 });
 
 
-function distance(lat1, lng1, lat2, lng2) {
-    return Math.sqrt(Math.pow(lat1 - lat2, 2) + Math.pow(lng1 - lng2, 2));
-}
 
+// live location tracker
 
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition(
-        function (position) {
-            const userLat = position.coords.latitude;
-            const userLng = position.coords.longitude;
+        pos => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
 
-            // User marker
             if (!userMarker) {
-                userMarker = L.marker([userLat, userLng], {
+                userMarker = L.marker([lat, lng], {
                     icon: L.icon({
-                        iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png',
-                        iconSize: [32, 32]
+                        iconUrl: "https://cdn-icons-png.flaticon.com/512/64/64113.png",
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40]
                     })
                 })
-                    .addTo(map)
-                    .bindPopup('You are here')
-                    .openPopup();
+                .addTo(map)
+                .bindPopup("You are here")
+                .openPopup();
             } else {
-                userMarker.setLatLng([userLat, userLng]);
+                userMarker.setLatLng([lat, lng]);
             }
 
-            map.setView([userLat, userLng], 15);
+            map.setView([lat, lng], 15);
 
-            if (currentWaypointIndex < tourWaypoints.length) {
-                drawRoute(userLat, userLng);
+            if (currentPointIndex < tourPoints.length) {
+                drawRoute(lat, lng);
 
-                const target = tourWaypoints[currentWaypointIndex];
-                const dist = distance(userLat, userLng, target.coords[0], target.coords[1]);
+                const target = tourPoints[currentPointIndex];
+                const dist = distance(lat, lng, target.coords[0], target.coords[1]);
 
                 if (dist < proximityThreshold) {
                     alert(`You have reached ${target.name}!`);
-                    currentWaypointIndex++;
-                    updateNextInfo();
 
-                    if (currentWaypointIndex >= tourWaypoints.length) {
-                        alert('The 7 Hills of Edinburgh tour is complete – congratulations!');
+                    currentPointIndex++;
+                    updateNextPointInfo();
+
+                    if (currentPointIndex >= tourPoints.length) {
+                        alert("Tour complete — well done!");
                         if (routeControl) map.removeControl(routeControl);
-                    } else {
-                        drawRoute(userLat, userLng);
                     }
                 }
             }
         },
-        function (err) {
-            console.error('Geolocation error:', err);
-        },
+        err => console.error("Geolocation error:", err),
         { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
     );
-} else {
-    console.warn('Geolocation not supported – manual mode only');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initMap();
-});
+document.addEventListener("DOMContentLoaded", initMap);
