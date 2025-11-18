@@ -3,52 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tours - Edinburgh Walking Tours</title>
+    <title>Old Town Tour - Edinburgh Walking Tours</title>
     <link rel="stylesheet" href="styles/main.css">
-
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
-    <!-- Leaflet Routing Machine CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
 </head>
 <body>
-    <header>
-        <h1>Edinburgh Walking Tours</h1>
-    </header>
-	<div class="container">
-		<section class="fullWidth">
-			<nav>
-				<ul>
-					<div class="fourthWidth">
-						<li><a href="index.html">Home</a></li>
-					</div>
-					<div class="fourthWidth">
-						<li><a href="tours.html">Tours</a></li>
-					</div>
-					<div class="fourthWidth">
-						<li><a href="reviews.html">Reviews</a></li>
-					</div>
-					<div class="fourthWidth">
-						<li><a href="settings.html">Settings</a></li>
-					</div>
-				</ul>
-			</nav>
-		</section>
-    </div>
-    <main>
-        <h2 class="page-title">Tours</h2>
 
-        <!-- Map container -->
+    <!-- HAMBURGER HEADER -->
+    <header class="site-header">
+        <button class="hamburger" aria-label="Open menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <h1 class="header-title">Edinburgh Walking Tours</h1>
+    </header>
+
+    <!-- OVERLAY MENU – NO DROPDOWN -->
+    <nav class="overlay-menu" id="overlayMenu">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toursfirstpage.html">Tours</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <!-- DESKTOP NAV -->
+    <div class="desktop-nav">
+        <nav>
+            <ul>
+                <div class="fourthWidth"><li><a href="index.html">Home</a></li></div>
+                <div class="fourthWidth"><li><a href="toursfirstpage.html">Tours</a></li></div>
+                <div class="fourthWidth"><li><a href="reviews.html">Reviews</a></li></div>
+                <div class="fourthWidth"><li><a href="settings.html">Settings</a></li></div>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- ONE MAIN TAG ONLY -->
+    <main>
+        <h2 class="page-title">Old Town Walking Tour</h2>
+
+        <!-- Next Location Info -->
+        <div id="next-hill-info">
+            <strong>Next:</strong>
+            <span id="next-location-name">Edinburgh Castle</span>
+            <button id="next-btn" class="action-btn">Go There</button>
+        </div>
+
         <div id="map"></div>
     </main>
 
-    <!-- Leaflet JS -->
+    <!-- Scripts (all at the end) -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-
-    <!-- Custom map script -->
     <script src="scripts/map.js"></script>
-	</div>
+    <script src="scripts/menu.js"></script>
+    <!-- dropdown.js not needed on this page -->
 </body>
 </html>

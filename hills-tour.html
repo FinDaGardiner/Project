@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edinburgh Walking Tours</title>
+    <title>The 7 Hills of Edinburgh Tour - Edinburgh Walking Tours</title>
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
 </head>
 <body>
 
-<!-- HAMBURGER HEADER -->
+    <!-- HAMBURGER HEADER -->
     <header class="site-header">
         <button class="hamburger" aria-label="Open menu" aria-expanded="false">
             <span></span><span></span><span></span>
@@ -20,7 +22,7 @@
     <nav class="overlay-menu" id="overlayMenu">
         <ul>
             <li><a href="index.html">Home</a></li>
-            <li><a href="toursfirstpage.html">Tours</a></li> <!-- Direct link -->
+            <li><a href="toursfirstpage.html">Tours</a></li>
             <li><a href="reviews.html">Reviews</a></li>
             <li><a href="settings.html">Settings</a></li>
         </ul>
@@ -38,18 +40,27 @@
         </nav>
     </div>
 
-    <!-- ==== MAIN CONTENT ==== -->
-    <div class="container">
-        <main>
-            <section>
-                <h2 class="page-title">Home</h2>
-                <p>Welcome to Walk Through Edinburgh, this website is a university project in which I have created a self-guided tour for the city of Edinburgh.</p>
-            </section>
-        </main>
-    </div>
+    <main>
+        <h2 class="page-title">The 7 Hills of Edinburgh Tour</h2>
 
-    <!-- ==== SCRIPTS ==== -->
-    <script src="scripts/menu.js"></script>
+        <!-- NEXT INFO + BUTTON (under the map) -->
+        <div id="next-hill-info">
+            <strong>Next:</strong> <span id="next-hill-name">">Castle Rock</span>
+            <button id="next-btn" class="action-btn">Go There</button>
+        </div>
+
+        <div id="map"></div>
+    </main>
+
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+    <!-- Custom script (updated) -->
+    <script src="scripts/map-hills.js"></script>
+
+    <!-- Menu & dropdown (optional) -->
     <script src="scripts/dropdown.js"></script>
+    <script src="scripts/menu.js"></script>
 </body>
 </html>

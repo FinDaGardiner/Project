@@ -7,33 +7,42 @@
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <header>
-        <h1>Edinburgh Walking Tours</h1>
+	<!-- HAMBURGER HEADER -->
+    <header class="site-header">
+        <button class="hamburger" aria-label="Open menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <h1 class="header-title">Edinburgh Walking Tours</h1>
     </header>
-    <div class="container">
-        <section class="fullWidth">
-            <nav>
-                <ul>
-                    <div class="fourthWidth">
-                        <li><a href="index.html">Home</a></li>
-                    </div>
-                    <div class="fourthWidth">
-                        <li><a href="tours.html">Tours</a></li>
-                    </div>
-                    <div class="fourthWidth">
-                        <li><a href="reviews.html">Reviews</a></li>
-                    </div>
-                    <div class="fourthWidth">
-                        <li><a href="settings.html">Settings</a></li>
-                    </div>
-                </ul>
-            </nav>
-        </section>
-		<section>
-			<main>
-				<h2 class="page-title">Reviews</h2>
-			</main>
-		</section>
+
+    <!-- OVERLAY MENU – NO DROPDOWN -->
+    <nav class="overlay-menu" id="overlayMenu">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="toursfirstpage.html">Tours</a></li> <!-- Direct link -->
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <!-- DESKTOP NAV -->
+    <div class="desktop-nav">
+        <nav>
+            <ul>
+                <div class="fourthWidth"><li><a href="index.html">Home</a></li></div>
+                <div class="fourthWidth"><li><a href="toursfirstpage.html">Tours</a></li></div>
+                <div class="fourthWidth"><li><a href="reviews.html">Reviews</a></li></div>
+                <div class="fourthWidth"><li><a href="settings.html">Settings</a></li></div>
+            </ul>
+        </nav>
     </div>
+	
+	<section>
+		<main>
+			<h2 class="page-title">Reviews</h2>
+		</main>
+	</section>
+	<script src="scripts/dropdown.js"></script>
+	<script src="scripts/menu.js"></script>
 </body>
 </html>
