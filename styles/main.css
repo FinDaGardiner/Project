@@ -1,363 +1,534 @@
-/* ============================================= */
-/*  1. RESET & BASE                              */
-/* ============================================= */
+/* =========================
+   Edinburgh Walking Tours
+   main.css (clean, mobile-first)
+   ========================= */
+
+/* ---------- Base reset ---------- */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-    font-size: 100%;
+  /* controlled by applySettings.js via --font-scale */
+  font-size: var(--font-scale, 100%);
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
-    line-height: 1.6;
-    margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
 }
 
-/* ============================================= */
-/*  2. HAMBURGER HEADER (MOBILE)                 */
-/* ============================================= */
+/* ---------- Header + navigation ---------- */
 .site-header {
-    display: flex;
-    align-items: center;
-    background: #333;
-    color: #fff;
-    padding: 0.8rem 1rem;
-    position: relative;
-    z-index: 1100;
+  display: flex;
+  align-items: center;
+  background: #333;
+  color: #fff;
+  padding: 0.8rem 1rem;
+  position: relative;
+  z-index: 1100;
 }
 
 .header-title {
-    flex: 1;
-    margin: 0;
-    font-size: 1.4rem;
-    text-align: center;
+  flex: 1;
+  margin: 0;
+  font-size: 1.4rem;
+  text-align: center;
 }
 
-/* Hamburger Button */
+/* Hamburger (mobile) */
 .hamburger {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    z-index: 1200;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1200;
 }
 
 .hamburger span {
-    width: 24px;
-    height: 3px;
-    background: #fff;
-    border-radius: 2px;
-    transition: all 0.3s ease;
+  width: 24px;
+  height: 3px;
+  background: #fff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
 .hamburger[aria-expanded="true"] span:nth-child(1) {
-    transform: rotate(45deg) translate(5px, 5px);
+  transform: rotate(45deg) translate(5px, 5px);
 }
-
 .hamburger[aria-expanded="true"] span:nth-child(2) {
-    opacity: 0;
+  opacity: 0;
 }
-
 .hamburger[aria-expanded="true"] span:nth-child(3) {
-    transform: rotate(-45deg) translate(7px, -6px);
+  transform: rotate(-45deg) translate(7px, -6px);
 }
 
-/* ============================================= */
-/*  3. OVERLAY MENU (MOBILE) – NO DROPDOWN       */
-/* ============================================= */
+/* Overlay menu (mobile) */
 .overlay-menu {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: rgba(51, 51, 51, 0.98);
-    transition: left 0.3s ease;
-    z-index: 1000;
-    overflow-y: auto;
-    padding-top: 5rem;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(51, 51, 51, 0.98);
+  transition: left 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+  padding-top: 5rem;
 }
 
 .overlay-menu.open {
-    left: 0;
+  left: 0;
 }
 
 .overlay-menu ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.overlay-menu li {
-    margin: 0;
+  list-style: none;
 }
 
 .overlay-menu a {
-    display: block;
-    padding: 1.2rem 2rem;
-    color: #fff;
-    text-decoration: none;
-    font-size: 1.1rem;
-    font-weight: bold;
-    transition: background 0.2s;
+  display: block;
+  padding: 1.2rem 2rem;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: background 0.2s;
 }
 
 .overlay-menu a:hover {
-    background: #555;
+  background: #555;
 }
 
-/* ============================================= */
-/*  4. DESKTOP NAVIGATION (HIDDEN ON MOBILE)     */
-/* ============================================= */
+/* Desktop nav */
 .desktop-nav {
-    background: #444;
+  background: #444;
 }
 
 .desktop-nav nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: space-around;
-}
-
-.fourthWidth {
-    flex: 1;
-    text-align: center;
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
 }
 
 .desktop-nav nav li {
-    display: inline-block;
+  display: inline-block;
 }
 
 .desktop-nav nav a {
-    display: block;
-    padding: 1rem;
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+  display: block;
+  padding: 1rem;
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
 .desktop-nav nav a:hover {
-    background-color: #666;
+  background-color: #666;
 }
 
-/* ============================================= */
-/*  5. RESPONSIVE SWITCH                         */
-/* ============================================= */
-/* Mobile: hide desktop nav, show hamburger */
+/* Responsive: hide desktop nav on mobile */
 @media (max-width: 768px) {
-    .desktop-nav {
-        display: none;
-    }
+  .desktop-nav {
+    display: none;
+  }
 }
 
-/* Desktop: hide hamburger & overlay */
+/* Responsive: hide hamburger + overlay on desktop */
 @media (min-width: 769px) {
-    .hamburger,
-    .overlay-menu {
-        display: none;
-    }
+  .hamburger,
+  .overlay-menu {
+    display: none;
+  }
 }
 
-/* ============================================= */
-/*  6. MAIN CONTENT & PAGE TITLE                 */
-/* ============================================= */
+/* ---------- Layout ---------- */
 .container {
-    width: 100%;
+  width: 100%;
 }
 
 main {
-    padding: 2rem 1.5rem;
+  padding: 2rem 1.5rem;
 }
 
 .page-title {
-    text-align: center;
-    margin: 2rem 0 1.5rem;
-    font-size: 2rem;
-    color: #333;
+  text-align: center;
+  margin: 2rem 0 1.5rem;
+  font-size: 2rem;
+  color: #333;
 }
 
-/* Mobile adjustments */
 @media (max-width: 768px) {
-    main {
-        padding: 1.5rem 1rem;
-    }
-    .page-title {
-        font-size: 1.6rem;
-    }
+  main {
+    padding: 1.5rem 1rem;
+  }
+  .page-title {
+    font-size: 1.6rem;
+  }
 }
 
-/* ============================================= */
-/*  7. MAP STYLING                               */
-/* ============================================= */
+/* ---------- Map ---------- */
 #map {
-    height: 70vh;
-    width: 100%;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    margin-top: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 70vh;
+  width: 100%;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  margin-top: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {
-    #map {
-        height: 60vh;
-    }
+  #map {
+    height: 60vh;
+  }
 }
 
-/* ============================================= */
-/*  8. DROPDOWN (DESKTOP ONLY – MOBILE USES LINK) */
-/* ============================================= */
+/* ---------- Buttons ---------- */
+.action-btn {
+  background: #1e90ff;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  min-height: 44px; /* mobile tap target */
+}
+
+.action-btn:hover:not(:disabled) {
+  background: #0d6efd;
+}
+
+.action-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.action-btn.secondary {
+  background: #6c757d;
+}
+.action-btn.secondary:hover:not(:disabled) {
+  background: #5c636a;
+}
+
+.action-btn.warning {
+  background: #dc3545;
+}
+.action-btn.warning:hover:not(:disabled) {
+  background: #bb2d3b;
+}
+
+/* ---------- Tour toolbar (controls + progress) ---------- */
+.tour-toolbar {
+  max-width: 980px;
+  margin: 0 auto 1rem;
+  display: grid;
+  gap: 0.9rem;
+
+  /* Mobile walking UX: keep controls visible */
+  position: sticky;
+  top: 0;
+  z-index: 1200;
+  background: #f8f9fa;
+  padding-top: 0.75rem;
+  padding-bottom: 0.5rem;
+}
+
+.route-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.progress-wrap {
+  display: grid;
+  gap: 0.35rem;
+  align-items: center;
+  justify-items: center;
+}
+
+.progress-text {
+  font-weight: 600;
+  text-align: center;
+}
+
+.progress-bar {
+  width: min(680px, 100%);
+  height: 12px;
+  background: #e9ecef;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #dfe3e6;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #1e90ff;
+  transition: width 250ms ease;
+}
+
+/* ---------- Dropdown (if used elsewhere) ---------- */
 .dropdown {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .dropbtn {
-    display: block;
-    padding: 1rem;
-    color: inherit;
-    text-decoration: none;
-    cursor: pointer;
+  display: block;
+  padding: 1rem;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .dropdown-content {
-    display: none;
-    position: absolute;
-    min-width: 180px;
-    background: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 4px;
-    overflow: hidden;
+  display: none;
+  position: absolute;
+  min-width: 180px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .dropdown-content a {
-    color: #333;
-    padding: 0.8rem 1rem;
-    text-decoration: none;
-    display: block;
-    white-space: nowrap;
-    transition: background 0.2s;
+  color: #333;
+  padding: 0.8rem 1rem;
+  text-decoration: none;
+  display: block;
+  white-space: nowrap;
+  transition: background 0.2s;
 }
 
 .dropdown-content a:hover {
-    background: #f0f0f0;
+  background: #f0f0f0;
 }
 
-/* Desktop: hover */
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-/* Mobile: JS toggle (kept for desktop dropdown if used elsewhere) */
+.dropdown:hover .dropdown-content,
 .dropdown.open .dropdown-content {
-    display: block;
+  display: block;
 }
 
-/* ============================================= */
-/*  9. HALF-LAYOUT (TEXT + IMAGE)                */
-/* ============================================= */
+/* ---------- Half layout (if used elsewhere) ---------- */
 .half-layout {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    align-items: flex-start;
-    margin: 2rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+  margin: 2rem 0;
 }
 
 .half-left,
 .half-right {
-    flex: 1 1 300px;
+  flex: 1 1 300px;
 }
 
 .half-right img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: block;
 }
 
 @media (max-width: 768px) {
-    .half-layout {
-        flex-direction: column;
-    }
+  .half-layout {
+    flex-direction: column;
+  }
 }
 
-/* ----- NEXT HILL INFO (under map) ----- */
-#next-hill-info {
-    text-align: center;
-    margin: 1.5rem 0 1rem;
-    font-size: 1.1rem;
-    font-weight: 500;
-    background: #f0f7ff;
-    padding: 0.8rem;
-    border-radius: 8px;
-    border: 1px solid #d0e4ff;
-}
-#next-hill-info strong { color: #1E90FF; }
-
-/* ----- ACTION BUTTON (reuse existing .action-btn) ----- */
-.action-btn {
-    background: #1E90FF;
-    color: #fff;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    margin-left: 1rem;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-.action-btn:hover:not(:disabled) { background: #0D6EFD; }
-.action-btn:disabled { background: #ccc; cursor: not-allowed; }
-
-/* ============================================= */
-/*  FULL-WIDTH IMAGES WITH CAPTION               */
-/* ============================================= */
+/* ---------- Full width image blocks (tours page) ---------- */
 .full-width-image {
-    margin: 2rem 0;
-    text-align: center;
+  margin: 2rem 0;
+  text-align: center;
 }
 
 .full-width-image img {
-    width: 100%;
-    height: auto;
-    max-height: 70vh;           /* Prevents super-tall images */
-    object-fit: cover;          /* Crops nicely if needed */
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  display: block;
 }
 
 .img-caption {
-    margin-top: 0.8rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #2c3e50;
-    font-style: italic;
+  margin-top: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  font-style: italic;
 }
 
-/* Mobile fine-tuning */
 @media (max-width: 768px) {
-    .full-width-image {
-        margin: 1.5rem 0;
-    }
-    .full-width-image img {
-        border-radius: 10px;
-    }
+  .full-width-image {
+    margin: 1.5rem 0;
+  }
+  .full-width-image img {
+    border-radius: 10px;
+  }
+}
+
+/* ---------- Settings page ---------- */
+.settings-card {
+  max-width: 600px;
+  margin: 1.5rem auto;
+  padding: 1.25rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.setting-label {
+  font-weight: bold;
+}
+
+.setting-control {
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 180px;
+}
+
+.setting-help {
+  margin-top: 0.8rem;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .setting-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .setting-control {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* ---------- Modal (arrival + custom order) ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 3000;
+  padding: 1rem;
+}
+
+.modal.open {
+  display: grid;
+}
+
+.modal-card {
+  width: min(560px, 100%);
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.modal-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin: 0.75rem 0;
+  display: block;
+}
+
+.modal-close {
+  float: right;
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.modal-help {
+  margin-top: 0.25rem;
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- Custom order list (mobile-friendly) ---------- */
+.order-list {
+  list-style: none;
+  padding: 0.6rem;
+  margin: 0.75rem 0 0.25rem;
+  display: grid;
+  gap: 0.5rem;
+  max-height: 45vh;
+  overflow: auto;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.order-item {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.order-name {
+  font-weight: 600;
+  flex: 1;
+}
+
+.order-move {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.order-move button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+
+.order-move button:active {
+  transform: scale(0.98);
 }

@@ -33,12 +33,37 @@
             </ul>
         </nav>
     </div>
-	<section>
-		<main>
-			<h2 class="page-title">Settings</h2>
-		</main>
-	</section>
-	<script src="scripts/dropdown.js"></script>
-	<script src="scripts/menu.js"></script>
+
+    <!-- SETTINGS CONTENT -->
+    <main class="container">
+    <h2 class="page-title">Settings</h2>
+
+    <section class="settings-card">
+        <h3>Accessibility & Display</h3>
+
+        <div class="setting-row">
+            <label for="fontSizeSelect" class="setting-label">Font size</label>
+
+            <select id="fontSizeSelect" class="setting-control">
+                <option value="100">Default</option>
+                <option value="112.5">Large</option>
+                <option value="125">Extra Large</option>
+            </select>
+        </div>
+
+        <p class="setting-help">
+            This changes text size across the website to make reading easier while walking.
+        </p>
+
+        <button id="resetFontBtn" class="action-btn" type="button">
+            Reset to default
+        </button>
+    </section>
+</main>
+
+	<script src="scripts/applySettings.js"></script>
+    <script src="scripts/dropdown.js"></script>
+    <script src="scripts/menu.js"></script>
+    <script src="scripts/settings.js"></script>
 </body>
 </html>

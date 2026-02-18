@@ -40,17 +40,56 @@
     <main>
         <h2 class="page-title">Old Town Walking Tour</h2>
 
-        <div id="next-hill-info">
-            <strong>Next:</strong>
-            <span id="next-location-name">Edinburgh Castle</span>
-            <button id="next-btn" class="action-btn">Go There</button>
-        </div>
+        <section class="tour-toolbar" aria-label="Tour controls">
+            <div class="route-controls">
+                <button id="shortestRouteBtn" class="action-btn" type="button">Shortest route</button>
+                <button id="customOrderBtn" class="action-btn" type="button">Custom order</button>
+                <button id="resetTourBtn" class="action-btn secondary" type="button">Reset tour</button>
+                <button id="skipStopBtn" class="action-btn warning" type="button">Skip stop</button>
+            </div>
 
+            <div class="progress-wrap" aria-label="Progress">
+                <div id="progressText" class="progress-text"></div>
+                <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+            </div>
+        </section>
+
+        <div id="next-point-name"></div>
+        <button id="next-point-btn">Next</button>
         <div id="map"></div>
+
     </main>
+
+    <!-- Arrival popup -->
+    <div id="arrivalModal" class="modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="arrivalTitle">
+        <button id="arrivalClose" class="modal-close" aria-label="Close">✕</button>
+        <h3 id="arrivalTitle"></h3>
+        <img id="arrivalImg" alt="">
+        <p id="arrivalText"></p>
+        <button id="arrivalNext" class="action-btn" type="button">Next stop</button>
+      </div>
+    </div>
+
+    <!-- Custom order modal -->
+    <div id="orderModal" class="modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="orderTitle">
+        <button id="orderClose" class="modal-close" aria-label="Close">✕</button>
+        <h3 id="orderTitle">Custom order</h3>
+        <p class="modal-help">Drag stops to reorder. This applies to remaining stops.</p>
+        <ul id="orderList" class="order-list" aria-label="Reorder stops"></ul>
+        <div class="modal-actions">
+          <button id="orderSave" class="action-btn" type="button">Save order</button>
+          <button id="orderCancel" class="action-btn secondary" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="scripts/applySettings.js"></script>
     <script src="scripts/map.js"></script>
     <script src="scripts/menu.js"></script>
 </body>
