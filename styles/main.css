@@ -532,3 +532,72 @@ main {
 .order-move button:active {
   transform: scale(0.98);
 }
+
+/* Hide tour UI when hamburger menu is open */
+body.menu-open .tour-toolbar {
+  display: none !important;
+}
+
+/* ---------- Tour page extras ---------- */
+.route-controls .action-btn {
+  flex: 1 1 180px;
+  min-width: 180px;
+  text-align: center;
+}
+
+#next-point-name {
+  margin: 0.75rem 0 0.5rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.next-stop-btn {
+  display: block;
+  width: min(420px, 100%);
+  margin: 0 auto;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(33, 37, 41, 0.96);
+  color: #fff;
+  padding: 0.85rem 1rem;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  z-index: 4000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  text-align: center;
+  max-width: min(92vw, 520px);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.user-location-marker {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #dc3545;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.25);
+}
+
+@media (max-width: 768px) {
+  .route-controls .action-btn {
+    flex-basis: calc(50% - 0.3rem);
+    min-width: 0;
+  }
+
+  .toast {
+    bottom: 0.9rem;
+    border-radius: 16px;
+  }
+}

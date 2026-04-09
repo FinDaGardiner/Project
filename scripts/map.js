@@ -1,6 +1,12 @@
-// ===== Old Town Tour (mobile-first, lean) =====
-// Features: shortest route, custom order (tap up/down), skip, reset,
-// progress UI, save/resume via localStorage.
+// ===== Old Town Tour =====
+// Fixes included:
+// - walking routes instead of driving
+// - route/custom-order confirmation toast
+// - map no longer recentres itself after you pan
+// - focus button to jump back to user location
+// - red user location marker
+// - more reliable auto-arrival using GPS accuracy
+// - less jumpy route redraw behaviour
 
 const TOUR_ID = "oldTown";
 const STORAGE_KEY = `tour:${TOUR_ID}`;
@@ -20,16 +26,18 @@ let activeRoute = [...tourPoints];
 let currentIndex = 0;
 let skipped = 0;
 
-// Arrival detection
-const ARRIVAL_RADIUS_METERS = 35;
+const ARRIVAL_RADIUS_METERS = 50;
 let lastArrivalIndex = -1;
 let lastArrivalTime = 0;
 const ARRIVAL_COOLDOWN_MS = 15000;
+const ROUTE_REDRAW_THRESHOLD_METERS = 12;
 
-// Leaflet state
 let map, userMarker, routeControl;
+let hasCentredOnUser = false;
+let lastRoutedPosition = null;
+let lastRoutedTargetName = null;
+let toastTimer = null;
 
-// ===== DOM (arrival modal) =====
 const arrivalModal = document.getElementById("arrivalModal");
 const arrivalTitle = document.getElementById("arrivalTitle");
 const arrivalImg = document.getElementById("arrivalImg");
@@ -37,28 +45,36 @@ const arrivalText = document.getElementById("arrivalText");
 const arrivalClose = document.getElementById("arrivalClose");
 const arrivalNext = document.getElementById("arrivalNext");
 
-// ===== DOM (custom order modal) =====
 const orderModal = document.getElementById("orderModal");
 const orderList = document.getElementById("orderList");
 const orderClose = document.getElementById("orderClose");
 const orderCancel = document.getElementById("orderCancel");
 const orderSave = document.getElementById("orderSave");
 
-// ===== DOM (progress) =====
 const progressText = document.getElementById("progressText");
 const progressFill = document.getElementById("progressFill");
 const progressBar = document.querySelector(".progress-bar");
+const toastEl = document.getElementById("toast");
+const focusLocationBtn = document.getElementById("focusLocationBtn");
 
-// ---------- Utilities ----------
 function openModal(el) {
   if (!el) return;
   el.classList.add("open");
   el.setAttribute("aria-hidden", "false");
 }
+
 function closeModal(el) {
   if (!el) return;
   el.classList.remove("open");
   el.setAttribute("aria-hidden", "true");
+}
+
+function showToast(message) {
+  if (!toastEl) return;
+  toastEl.textContent = message;
+  toastEl.classList.add("show");
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => toastEl.classList.remove("show"), 2600);
 }
 
 function distanceMeters(lat1, lon1, lat2, lon2) {
@@ -72,18 +88,22 @@ function distanceMeters(lat1, lon1, lat2, lon2) {
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
-// Simple nearest-neighbour (good, explainable, fast for small N)
 function nearestNeighbourSort(startLat, startLng, points) {
   const remaining = [...points];
   const sorted = [];
-  let curLat = startLat, curLng = startLng;
+  let curLat = startLat;
+  let curLng = startLng;
 
   while (remaining.length) {
-    let bestI = 0, bestD = Infinity;
+    let bestI = 0;
+    let bestD = Infinity;
     for (let i = 0; i < remaining.length; i++) {
       const p = remaining[i];
       const d = distanceMeters(curLat, curLng, p.coords[0], p.coords[1]);
-      if (d < bestD) { bestD = d; bestI = i; }
+      if (d < bestD) {
+        bestD = d;
+        bestI = i;
+      }
     }
     const next = remaining.splice(bestI, 1)[0];
     sorted.push(next);
@@ -93,24 +113,21 @@ function nearestNeighbourSort(startLat, startLng, points) {
   return sorted;
 }
 
-// ---------- Storage ----------
 function saveState() {
-  const state = {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
     i: currentIndex,
     skipped,
-    order: activeRoute.map(p => p.name)
-  };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    order: activeRoute.map((p) => p.name)
+  }));
 }
 
 function clearState() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-// Rebuild route from stored names (kept simple; falls back if mismatch)
 function rebuildRouteFromNames(names) {
-  const byName = new Map(tourPoints.map(p => [p.name, p]));
-  const rebuilt = names.map(n => byName.get(n)).filter(Boolean);
+  const byName = new Map(tourPoints.map((p) => [p.name, p]));
+  const rebuilt = names.map((n) => byName.get(n)).filter(Boolean);
   return rebuilt.length === tourPoints.length ? rebuilt : [...tourPoints];
 }
 
@@ -119,14 +136,16 @@ function loadStateIfAny() {
   if (!raw) return;
 
   let state;
-  try { state = JSON.parse(raw); } catch { return; }
-  if (!state) return;
+  try {
+    state = JSON.parse(raw);
+  } catch {
+    return;
+  }
 
-  // Only prompt if it actually contains progress/customisations
   const hasSomething =
-    (Number.isFinite(state.i) && state.i > 0) ||
-    (Number.isFinite(state.skipped) && state.skipped > 0) ||
-    (Array.isArray(state.order) && state.order.length === tourPoints.length);
+    (Number.isFinite(state?.i) && state.i > 0) ||
+    (Number.isFinite(state?.skipped) && state.skipped > 0) ||
+    (Array.isArray(state?.order) && state.order.length === tourPoints.length);
 
   if (!hasSomething) return;
 
@@ -141,15 +160,14 @@ function loadStateIfAny() {
   }
 
   if (Number.isFinite(state.i)) {
-    currentIndex = Math.max(0, Math.min(activeRoute.length, parseInt(state.i)));
+    currentIndex = Math.max(0, Math.min(activeRoute.length, parseInt(state.i, 10)));
   }
 
   if (Number.isFinite(state.skipped)) {
-    skipped = Math.max(0, parseInt(state.skipped));
+    skipped = Math.max(0, parseInt(state.skipped, 10));
   }
 }
 
-// ---------- UI ----------
 function updateProgressUI() {
   const total = activeRoute.length;
   const done = Math.min(currentIndex, total);
@@ -185,7 +203,14 @@ function updateNextStopUI() {
   updateProgressUI();
 }
 
-// ---------- Routing ----------
+function createWalkingRouter() {
+  return L.Routing.osrmv1({
+    serviceUrl: "https://router.project-osrm.org/route/v1",
+    profile: "foot",
+    language: "en"
+  });
+}
+
 function removeRoute() {
   if (routeControl && map) {
     map.removeControl(routeControl);
@@ -193,26 +218,47 @@ function removeRoute() {
   }
 }
 
-function drawRoute(userLat, userLng) {
-  if (!map) return;
-  if (currentIndex >= activeRoute.length) return;
+function drawRoute(userLat, userLng, options = {}) {
+  if (!map || currentIndex >= activeRoute.length) return;
+
+  const target = activeRoute[currentIndex];
+  const targetChanged = lastRoutedTargetName !== target.name;
+  const movedEnough = !lastRoutedPosition || distanceMeters(userLat, userLng, lastRoutedPosition.lat, lastRoutedPosition.lng) >= ROUTE_REDRAW_THRESHOLD_METERS;
+  const shouldRedraw = options.force === true || targetChanged || movedEnough;
+
+  if (!shouldRedraw) return;
 
   removeRoute();
 
-  const target = activeRoute[currentIndex];
   routeControl = L.Routing.control({
+    router: createWalkingRouter(),
     waypoints: [L.latLng(userLat, userLng), L.latLng(target.coords[0], target.coords[1])],
     routeWhileDragging: false,
     addWaypoints: false,
     draggableWaypoints: false,
+    fitSelectedRoutes: false,
     show: false,
-    lineOptions: { styles: [{ color: "#1E90FF", weight: 5 }] }
+    createMarker: () => null,
+    lineOptions: {
+      addWaypoints: false,
+      styles: [{ color: "#1E90FF", opacity: 0.9, weight: 6 }],
+      missingRouteStyles: [{ color: "#6c757d", opacity: 0.5, weight: 4, dashArray: "6,8" }]
+    }
   }).addTo(map);
 
-  map.fitBounds(routeControl.getBounds().pad(0.1));
+  lastRoutedPosition = { lat: userLat, lng: userLng };
+  lastRoutedTargetName = target.name;
 }
 
-// ---------- Tour actions ----------
+function focusOnUser() {
+  if (!userMarker || !map) {
+    showToast("Your location is not available yet.");
+    return;
+  }
+  const pos = userMarker.getLatLng();
+  map.setView([pos.lat, pos.lng], Math.max(map.getZoom(), 16));
+}
+
 function openArrival(point) {
   if (!arrivalModal) return;
   arrivalTitle.textContent = point.name;
@@ -241,7 +287,7 @@ function advance() {
   if (currentIndex >= activeRoute.length) return;
 
   const pos = userMarker ? userMarker.getLatLng() : map.getCenter();
-  drawRoute(pos.lat, pos.lng);
+  drawRoute(pos.lat, pos.lng, { force: true });
 }
 
 function skipStop() {
@@ -260,11 +306,13 @@ function resetTour() {
   skipped = 0;
   lastArrivalIndex = -1;
   lastArrivalTime = 0;
+  lastRoutedPosition = null;
+  lastRoutedTargetName = null;
 
   updateNextStopUI();
-
   const pos = userMarker ? userMarker.getLatLng() : map.getCenter();
-  drawRoute(pos.lat, pos.lng);
+  drawRoute(pos.lat, pos.lng, { force: true });
+  showToast("Tour reset.");
 }
 
 function shortestRoute() {
@@ -272,6 +320,7 @@ function shortestRoute() {
     alert("Turn on location services first, then try again.");
     return;
   }
+
   const pos = userMarker.getLatLng();
   const donePart = activeRoute.slice(0, currentIndex);
   const remainingPart = activeRoute.slice(currentIndex);
@@ -280,10 +329,10 @@ function shortestRoute() {
   activeRoute = donePart.concat(sortedRemaining);
   saveState();
   updateNextStopUI();
-  drawRoute(pos.lat, pos.lng);
+  drawRoute(pos.lat, pos.lng, { force: true });
+  showToast("Shortest walking route applied.");
 }
 
-// ---------- Custom order modal (tap Up/Down) ----------
 function buildOrderList() {
   if (!orderList) return;
   orderList.innerHTML = "";
@@ -325,10 +374,9 @@ function saveCustomOrder() {
   if (!orderList) return;
 
   const donePart = activeRoute.slice(0, currentIndex);
-  const remainingMap = new Map(activeRoute.slice(currentIndex).map(p => [p.name, p]));
-
-  const names = [...orderList.querySelectorAll(".order-item")].map(li => li.dataset.name);
-  const newRemaining = names.map(n => remainingMap.get(n)).filter(Boolean);
+  const remainingMap = new Map(activeRoute.slice(currentIndex).map((p) => [p.name, p]));
+  const names = [...orderList.querySelectorAll(".order-item")].map((li) => li.dataset.name);
+  const newRemaining = names.map((n) => remainingMap.get(n)).filter(Boolean);
 
   activeRoute = donePart.concat(newRemaining);
   saveState();
@@ -336,28 +384,22 @@ function saveCustomOrder() {
 
   if (userMarker) {
     const pos = userMarker.getLatLng();
-    drawRoute(pos.lat, pos.lng);
+    drawRoute(pos.lat, pos.lng, { force: true });
   }
 
   closeModal(orderModal);
+  showToast("Custom route order saved.");
 }
 
-// ---------- Events ----------
-arrivalClose?.addEventListener("click", () => closeModal(arrivalModal));
-arrivalModal?.addEventListener("click", (e) => { if (e.target === arrivalModal) closeModal(arrivalModal); });
+function createUserLocationIcon() {
+  return L.divIcon({
+    className: "",
+    html: '<div class="user-location-marker" aria-hidden="true"></div>',
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
+  });
+}
 
-orderClose?.addEventListener("click", () => closeModal(orderModal));
-orderCancel?.addEventListener("click", () => closeModal(orderModal));
-orderModal?.addEventListener("click", (e) => { if (e.target === orderModal) closeModal(orderModal); });
-orderSave?.addEventListener("click", saveCustomOrder);
-
-document.getElementById("next-point-btn")?.addEventListener("click", completeStop);
-document.getElementById("skipStopBtn")?.addEventListener("click", skipStop);
-document.getElementById("resetTourBtn")?.addEventListener("click", resetTour);
-document.getElementById("shortestRouteBtn")?.addEventListener("click", shortestRoute);
-document.getElementById("customOrderBtn")?.addEventListener("click", openCustomOrder);
-
-// ---------- Location tracking ----------
 function startLocation() {
   if (!navigator.geolocation) return;
 
@@ -365,32 +407,32 @@ function startLocation() {
     (pos) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
+      const accuracy = Number.isFinite(pos.coords.accuracy) ? pos.coords.accuracy : ARRIVAL_RADIUS_METERS;
 
       if (!userMarker) {
-        userMarker = L.marker([lat, lng], {
-          icon: L.icon({
-            iconUrl: "https://cdn-icons-png.flaticon.com/512/64/64113.png",
-            iconSize: [40, 40],
-            iconAnchor: [20, 40]
-          })
-        }).addTo(map).bindPopup("You are here");
+        userMarker = L.marker([lat, lng], { icon: createUserLocationIcon() })
+          .addTo(map)
+          .bindPopup("You are here");
       } else {
         userMarker.setLatLng([lat, lng]);
       }
 
-      map.setView([lat, lng], 16);
+      if (!hasCentredOnUser) {
+        map.setView([lat, lng], 16);
+        hasCentredOnUser = true;
+      }
 
       if (currentIndex < activeRoute.length) {
         drawRoute(lat, lng);
 
         const target = activeRoute[currentIndex];
         const dist = distanceMeters(lat, lng, target.coords[0], target.coords[1]);
+        const effectiveArrivalRadius = Math.max(ARRIVAL_RADIUS_METERS, Math.min(accuracy + 12, 90));
 
         const now = Date.now();
-        const cooldownOk =
-          currentIndex !== lastArrivalIndex || (now - lastArrivalTime) > ARRIVAL_COOLDOWN_MS;
+        const cooldownOk = currentIndex !== lastArrivalIndex || (now - lastArrivalTime) > ARRIVAL_COOLDOWN_MS;
 
-        if (dist <= ARRIVAL_RADIUS_METERS && cooldownOk) {
+        if (dist <= effectiveArrivalRadius && cooldownOk && !arrivalModal?.classList.contains("open")) {
           lastArrivalIndex = currentIndex;
           lastArrivalTime = now;
           completeStop();
@@ -398,11 +440,10 @@ function startLocation() {
       }
     },
     (err) => console.error("Geolocation error:", err),
-    { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+    { enableHighAccuracy: true, maximumAge: 3000, timeout: 12000 }
   );
 }
 
-// ---------- Init ----------
 function initMap() {
   map = L.map("map").setView([55.9533, -3.1883], 14);
 
@@ -410,14 +451,32 @@ function initMap() {
     attribution: "© OpenStreetMap contributors"
   }).addTo(map);
 
-  // markers use the original fixed numbering (nice for clarity)
   tourPoints.forEach((p, i) => {
     L.marker(p.coords).addTo(map).bindPopup(`<b>${i + 1}. ${p.name}</b>`);
   });
 
   loadStateIfAny();
   updateNextStopUI();
+  focusLocationBtn?.addEventListener("click", focusOnUser);
   startLocation();
 }
+
+arrivalClose?.addEventListener("click", () => closeModal(arrivalModal));
+arrivalModal?.addEventListener("click", (e) => {
+  if (e.target === arrivalModal) closeModal(arrivalModal);
+});
+
+orderClose?.addEventListener("click", () => closeModal(orderModal));
+orderCancel?.addEventListener("click", () => closeModal(orderModal));
+orderModal?.addEventListener("click", (e) => {
+  if (e.target === orderModal) closeModal(orderModal);
+});
+orderSave?.addEventListener("click", saveCustomOrder);
+
+document.getElementById("next-point-btn")?.addEventListener("click", completeStop);
+document.getElementById("skipStopBtn")?.addEventListener("click", skipStop);
+document.getElementById("resetTourBtn")?.addEventListener("click", resetTour);
+document.getElementById("shortestRouteBtn")?.addEventListener("click", shortestRoute);
+document.getElementById("customOrderBtn")?.addEventListener("click", openCustomOrder);
 
 document.addEventListener("DOMContentLoaded", initMap);
