@@ -1,3 +1,4 @@
+console.log("Walking tour routing loaded: foot profile");
 // ===== Old Town Tour =====
 // Fixes included:
 // - walking routes instead of driving
@@ -12,14 +13,75 @@ const TOUR_ID = "oldTown";
 const STORAGE_KEY = `tour:${TOUR_ID}`;
 
 const tourPoints = [
-  { name: "Edinburgh Castle", coords: [55.948612, -3.200833], image: "images/edinburgh-castle.jpg", info: "A historic fortress dominating the skyline and a key symbol of Edinburgh." },
-  { name: "Grassmarket", coords: [55.94746, -3.19624], image: "images/grassmarket.jpg", info: "A historic market square with views up to the castle and a lively atmosphere." },
-  { name: "Victoria Street", coords: [55.94866, -3.1938], image: "images/victoria-street.jpg", info: "Colourful curved street linking the Old Town to the Grassmarket." },
-  { name: "Greyfriars Bobby Statue", coords: [55.9468534, -3.1914782], image: "images/greyfriars-bobby.jpg", info: "Statue of the loyal Skye Terrier associated with Greyfriars Kirkyard." },
-  { name: "Greyfriars Kirkyard", coords: [55.94701, -3.19272], image: "images/greyfriars-kirkyard.jpg", info: "Historic graveyard with notable memorials and Old Town history." },
-  { name: "St Giles' Cathedral", coords: [55.94958, -3.19091], image: "images/st-giles.jpg", info: "Medieval cathedral on the Royal Mile, famous for its crown spire." },
-  { name: "Scott Monument", coords: [55.952415, -3.193278], image: "images/scott-monument.jpg", info: "Victorian Gothic monument to Sir Walter Scott in Princes Street Gardens." },
-  { name: "Holyrood Palace", coords: [55.95252, -3.17339], image: "images/holyrood-palace.jpg", info: "The King’s official residence in Scotland, at the end of the Royal Mile." }
+  { 
+    name: "Edinburgh Castle", 
+    coords: [55.948612, -3.200833], 
+    image: "images/edinburgh-castle.jpg", 
+    info: "A historic fortress dominating the skyline and a key symbol of Edinburgh." 
+  },
+
+  { 
+    name: "Grassmarket", 
+    coords: [55.94746, -3.19624], 
+    image: "images/grassmarket.jpg", 
+    info: "A historic market square with views up to the castle and a lively atmosphere." 
+  },
+
+  { 
+    name: "Victoria Street", 
+    coords: [55.94866, -3.1938], 
+    image: "images/victoria-street.jpg", 
+    info: "Colourful curved street linking the Old Town to the Grassmarket." 
+  },
+
+  { 
+    name: "Greyfriars Bobby Statue", 
+    coords: [55.9468534, -3.1914782], 
+    image: "images/greyfriars-bobby.jpg", 
+    info: "Statue of the loyal Skye Terrier associated with Greyfriars Kirkyard." 
+  },
+
+  { 
+    name: "National Museum of Scotland", 
+    coords: [55.94700, -3.18930], 
+    image: "images/national-museum.jpg", 
+    info: "One of Scotland’s most popular museums, located on Chambers Street." 
+  },
+
+  { 
+    name: "The Real Mary King's Close (Entrance)", 
+    coords: [55.94990, -3.19050], 
+    image: "images/mary-kings-close.jpg", 
+    info: "An underground historic close located just off the Royal Mile near St Giles’ Cathedral." 
+  },
+
+  { 
+    name: "St Giles' Cathedral", 
+    coords: [55.94958, -3.19091], 
+    image: "images/st-giles.jpg", 
+    info: "Medieval cathedral on the Royal Mile, famous for its crown spire." 
+  },
+
+  { 
+    name: "Royal Mile", 
+    coords: [55.95001, -3.18822], 
+    image: "images/royal-mile.jpg", 
+    info: "Historic centre point of the Royal Mile marked by the Mercat Cross." 
+  },
+
+  { 
+    name: "Scott Monument", 
+    coords: [55.952415, -3.193278], 
+    image: "images/scott-monument.jpg", 
+    info: "Victorian Gothic monument to Sir Walter Scott in Princes Street Gardens." 
+  },
+
+  { 
+    name: "Palace of Holyroodhouse", 
+    coords: [55.95245, -3.17288], 
+    image: "images/holyrood-palace.jpg", 
+    info: "The King’s official residence in Scotland, located at the end of the Royal Mile." 
+  }
 ];
 
 let activeRoute = [...tourPoints];
@@ -207,7 +269,8 @@ function createWalkingRouter() {
   return L.Routing.osrmv1({
     serviceUrl: "https://router.project-osrm.org/route/v1",
     profile: "foot",
-    language: "en"
+    language: "en",
+    timeout: 30000
   });
 }
 
@@ -452,7 +515,7 @@ function initMap() {
   }).addTo(map);
 
   tourPoints.forEach((p, i) => {
-    L.marker(p.coords).addTo(map).bindPopup(`<b>${i + 1}. ${p.name}</b>`);
+    L.marker(p.coords).addTo(map).bindPopup(`<b>${p.name}</b>`);
   });
 
   loadStateIfAny();

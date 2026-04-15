@@ -1,3 +1,4 @@
+console.log("Walking tour routing loaded: foot profile");
 // ===== 7 Hills Tour =====
 // Fixes included:
 // - walking routes instead of driving
@@ -206,7 +207,8 @@ function createWalkingRouter() {
   return L.Routing.osrmv1({
     serviceUrl: "https://router.project-osrm.org/route/v1",
     profile: "foot",
-    language: "en"
+    language: "en",
+    timeout: 30000
   });
 }
 
@@ -451,7 +453,7 @@ function initMap() {
   }).addTo(map);
 
   tourPoints.forEach((p, i) => {
-    L.marker(p.coords).addTo(map).bindPopup(`<b>${i + 1}. ${p.name}</b>`);
+    L.marker(p.coords).addTo(map).bindPopup(`<b>${p.name}</b>`);
   });
 
   loadStateIfAny();
