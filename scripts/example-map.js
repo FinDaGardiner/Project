@@ -6,7 +6,7 @@ initTour({
   userCenterZoom: 15,
   defaultCenter: [55.9533, -3.1883],
   accuracyBuffer: 15,
-  maxEffectiveArrivalRadius: 60,
+  maxEffectiveArrivalRadius: 35,
   points: [
     {
       name: "Tesco",
