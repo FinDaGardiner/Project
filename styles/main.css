@@ -135,14 +135,12 @@ body {
   background-color: #666;
 }
 
-/* Responsive: hide desktop nav on mobile */
 @media (max-width: 768px) {
   .desktop-nav {
     display: none;
   }
 }
 
-/* Responsive: hide hamburger + overlay on desktop */
 @media (min-width: 769px) {
   .hamburger,
   .overlay-menu {
@@ -150,7 +148,6 @@ body {
   }
 }
 
-/* ---------- Layout ---------- */
 .container {
   width: 100%;
 }
@@ -175,7 +172,6 @@ main {
   }
 }
 
-/* ---------- Map ---------- */
 #map {
   height: 70vh;
   width: 100%;
@@ -191,7 +187,6 @@ main {
   }
 }
 
-/* ---------- Buttons ---------- */
 .action-btn {
   background: #1e90ff;
   color: #fff;
@@ -201,7 +196,7 @@ main {
   font-weight: bold;
   cursor: pointer;
   transition: background 0.3s;
-  min-height: 44px; /* mobile tap target */
+  min-height: 44px; 
 }
 
 .action-btn:hover:not(:disabled) {
@@ -227,14 +222,12 @@ main {
   background: #bb2d3b;
 }
 
-/* ---------- Tour toolbar (controls + progress) ---------- */
 .tour-toolbar {
   max-width: 980px;
   margin: 0 auto 1rem;
   display: grid;
   gap: 0.9rem;
 
-  /* Mobile walking UX: keep controls visible */
   position: sticky;
   top: 0;
   z-index: 1200;
@@ -278,7 +271,6 @@ main {
   transition: width 250ms ease;
 }
 
-/* ---------- Dropdown (if used elsewhere) ---------- */
 .dropdown {
   position: relative;
   display: inline-block;
@@ -323,7 +315,6 @@ main {
   display: block;
 }
 
-/* ---------- Half layout (if used elsewhere) ---------- */
 .half-layout {
   display: flex;
   flex-wrap: wrap;
@@ -351,7 +342,6 @@ main {
   }
 }
 
-/* ---------- Full width image blocks (tours page) ---------- */
 .full-width-image {
   margin: 2rem 0;
   text-align: center;
@@ -384,7 +374,6 @@ main {
   }
 }
 
-/* ---------- Settings page ---------- */
 .settings-card {
   max-width: 600px;
   margin: 1.5rem auto;
@@ -431,7 +420,6 @@ main {
   }
 }
 
-/* ---------- Modal (arrival + custom order) ---------- */
 .modal {
   position: fixed;
   inset: 0;
@@ -484,7 +472,6 @@ main {
   flex-wrap: wrap;
 }
 
-/* ---------- Custom order list (mobile-friendly) ---------- */
 .order-list {
   list-style: none;
   padding: 0.6rem;
@@ -533,12 +520,10 @@ main {
   transform: scale(0.98);
 }
 
-/* Hide tour UI when hamburger menu is open */
 body.menu-open .tour-toolbar {
   display: none !important;
 }
 
-/* ---------- Tour page extras ---------- */
 .route-controls .action-btn {
   flex: 1 1 180px;
   min-width: 180px;

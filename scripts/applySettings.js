@@ -1,4 +1,3 @@
-// Apply saved font size on every page
 const savedFontScale = localStorage.getItem("fontScale");
 
 if (savedFontScale) {
